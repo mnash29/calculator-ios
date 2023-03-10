@@ -22,6 +22,18 @@ class ViewController: UIViewController {
     */
     private var isFinishedTyping: Bool = true
 
+    private var displayValue: Double {
+        get {
+            guard let number = Double(displayLabel.text!) else {
+                fatalError("Error converting display label text to Double.")
+            }
+            return number
+        }
+        set {
+            displayLabel.text = String(newValue)
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -30,21 +42,17 @@ class ViewController: UIViewController {
     @IBAction func calcButtonPressed(_ sender: UIButton) {
         isFinishedTyping = true
 
-        guard let number = Double(displayLabel.text!) else {
-            fatalError("Error converting display label text to Double.")
-        }
-
         guard let calcMethod = sender.currentTitle else {
             fatalError("Error determining calculation method requested.")
         }
 
         switch calcMethod {
         case "+/-":
-            displayLabel.text = String(number * -1)
+            displayValue *= -1
         case "%":
-            displayLabel.text = String(number * 0.01)
+            displayValue *= 0.01
         default:
-            displayLabel.text = "0"
+            displayValue = 0
         }
     }
 
@@ -63,11 +71,7 @@ class ViewController: UIViewController {
         } else {
 
             if numValue == "." {
-                guard let currentDisplayValue = Double(displayLabel.text!) else {
-                    fatalError("Error converting display label text to Double.")
-                }
-
-                guard floor(currentDisplayValue) == currentDisplayValue else { return }
+                guard floor(displayValue) == displayValue else { return }
             }
 
             displayLabel.text?.append(numValue)
