@@ -19,10 +19,9 @@ class ViewController: UIViewController {
      3. internal: accessible anywhere in the module (default)
      4. public: accessible from other modules
      5. open: public + available to subclass and override
-    */
+     */
     private var isFinishedTyping: Bool = true
-
-    let calculator = CalculatorLogic(0)
+    private var calculator = CalculatorLogic()
 
     var displayValue: Double {
         get {
@@ -32,7 +31,13 @@ class ViewController: UIViewController {
             return number
         }
         set {
-            displayLabel.text = String(newValue)
+            if floor(newValue) == newValue {
+                displayLabel.text = String(Int(newValue))
+            } else {
+                displayLabel.text = String(newValue)
+            }
+
+            displayLabel.blink()
         }
     }
 
@@ -48,7 +53,11 @@ class ViewController: UIViewController {
             fatalError("Error determining calculation method requested.")
         }
 
-        displayValue = calculator.performCalculation(with: displayValue, symbol: calcMethod)
+        calculator.setNumber(to: displayValue)
+
+        guard let calculatedValue = calculator.performOperation(with: calcMethod) else { return }
+
+        displayValue = calculatedValue
     }
 
     @IBAction func numButtonPressed(_ sender: UIButton) {
@@ -73,4 +82,16 @@ class ViewController: UIViewController {
         }
     }
 
+}
+
+// MARK: - UILabel Extension Methods
+
+extension UILabel {
+    func blink(duration: TimeInterval = 0.1, delay: TimeInterval = 0.0, alpha: CGFloat = 0.0) {
+        UIView.animate(withDuration: duration,
+                       delay: delay,
+                       options: [.curveEaseInOut],
+                       animations: { self.alpha = alpha },
+                       completion: { _ in self.alpha = 1.0 })
+    }
 }

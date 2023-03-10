@@ -7,25 +7,64 @@
 
 import Foundation
 
-class CalculatorLogic {
+/*
+ Struct
 
-    var number: Double
+ Quicker: stored in stack vs heap
+ Immutable
+ Deep Copy
+ Threadsafe
 
-    init(_ number: Double) {
+ Class
+
+ Inheritance
+ Required if working with objective-c modules
+
+ */
+struct CalculatorLogic {
+
+    private var number: Double?
+    private var intermediateCalculation: (operand: Double, method: String)?
+
+    mutating func setNumber(to number: Double) {
         self.number = number
     }
 
-    func performCalculation(with value: Double, symbol: String) -> Double {
+    mutating func performOperation(with symbol: String) -> Double? {
+
+        guard let value = number else { return nil }
 
         switch symbol {
         case "+/-":
-            number = value * -1
+            return value * -1
         case "%":
-            number = value * 0.01
+            return value * 0.01
+        case "AC":
+            return 0
+        case "=":
+            return performCalculation(with: value)
         default:
-            number = 0
+            intermediateCalculation = (operand: value, method: symbol)
         }
 
-        return number
+        return nil
+    }
+
+    private func performCalculation(with rightOperand: Double) -> Double? {
+
+        guard let leftOperand = intermediateCalculation?.operand else { return nil }
+
+        guard let method = intermediateCalculation?.method else { return nil }
+
+        switch method {
+        case "+":
+            return leftOperand + rightOperand
+        case "-":
+            return leftOperand - rightOperand
+        case "×":
+            return leftOperand * rightOperand
+        default:
+            return leftOperand / rightOperand
+        }
     }
 }
