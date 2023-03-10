@@ -9,7 +9,7 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    @IBOutlet weak private var displayLabel: UILabel!
+    @IBOutlet weak var displayLabel: UILabel!
 
     /*
      ACCESS LEVELS
@@ -22,7 +22,9 @@ class ViewController: UIViewController {
     */
     private var isFinishedTyping: Bool = true
 
-    private var displayValue: Double {
+    let calculator = CalculatorLogic(0)
+
+    var displayValue: Double {
         get {
             guard let number = Double(displayLabel.text!) else {
                 fatalError("Error converting display label text to Double.")
@@ -36,7 +38,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+
     }
 
     @IBAction func calcButtonPressed(_ sender: UIButton) {
@@ -46,14 +48,7 @@ class ViewController: UIViewController {
             fatalError("Error determining calculation method requested.")
         }
 
-        switch calcMethod {
-        case "+/-":
-            displayValue *= -1
-        case "%":
-            displayValue *= 0.01
-        default:
-            displayValue = 0
-        }
+        displayValue = calculator.performCalculation(with: displayValue, symbol: calcMethod)
     }
 
     @IBAction func numButtonPressed(_ sender: UIButton) {
